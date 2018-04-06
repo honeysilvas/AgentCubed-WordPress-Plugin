@@ -1,6 +1,7 @@
 # AgentCubed Integration Plugin
 
-This is a WordPress plugin that integrates the AgentCubed with Contact Form 7, Facebook Lead Ads and more using the AgentCubed API.  This plugin can also be extended to get leads from other sources.
+This is a WordPress plugin that integrates AgentCubed with Contact Form 7, Facebook Lead Ads and more using the AgentCubed API.  
+This plugin can also be extended to get leads from other sources.
 
 
 # Details

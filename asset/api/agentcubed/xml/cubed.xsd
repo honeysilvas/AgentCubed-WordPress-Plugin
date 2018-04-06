@@ -1,0 +1,2015 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://dataexchange.agentcubed.com"
+  xmlns:mstns="http://dataexchange.agentcubed.com"
+  elementFormDefault="qualified"
+  targetNamespace="http://dataexchange.agentcubed.com"
+  version="2.0"
+    >
+  <xsd:element name="AgentCubedAPI">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="LoginCredentials"
+                     type="LoginCredentialsType" />
+        <xsd:element name="Leads"
+                     type="LeadsType">
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- LoginCredentialsType -->
+  <xsd:complexType name="LoginCredentialsType">
+    <xsd:sequence>
+      <xsd:element name="ErrorNotificationEmail"
+                   type="validationEmail">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            This field is required.  It will allow the API to send a notification email back to the address provided in the event an error occurs.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Username"
+                   type="string255">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Group_WebLead_Id, user name and password are key elements to determine where a lead is coming from and where it should be assigned.  All of these fields are provided by AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Password"
+                   type="string255">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Group_WebLead_Id, user name and password are key elements to determine where a lead is coming from and where it should be assigned.  All of these fields are provided by AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Group_WebLead_ID"
+                   type="xsd:int">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Group_WebLead_Id, user name and password are key elements to determine where a lead is coming from and where it should be assigned.  All of these fields are provided by AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="LeadSourceKey"
+                   type="validationGuidString">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            This field is required and will be provided by your AgentCubed administrator.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="AgentID"
+                   type="validationGuidString"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            AgentID is used when you want to send a record to an exclusive user or an individual agent.
+            Pass xsi:nil="true" as default when this feature is not being used, otherwise use the unique identifier that is provided by AgentCubed.
+            For example, 6F9619FF-8B86-D011-B42D-00C04FC964FF is a valid uniqueidentifier value, but would fail because it's not mapped to any users.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="AgentIDType"
+                   type="enumAgentIDTypes"
+                   minOccurs="0">
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- LeadsType -->
+  <xsd:complexType name="LeadsType">
+    <xsd:sequence maxOccurs="20">
+      <xsd:element name="Lead">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="LeadInformation"
+                         type="LeadInformationType" />
+            <xsd:element name="LeadIndividuals">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  1. Must have at least one Individual with a relationship type of Applicant
+                  2. Can not have more than one Individual with a relationship type of Applicant
+                  3. Can not have more than one Individual with a relationship type of Spouse
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:complexType>
+                <xsd:sequence maxOccurs="unbounded">
+                  <xsd:element name="Individual"
+                               type="IndividualDetailsType" />
+                </xsd:sequence>
+              </xsd:complexType>
+              <xsd:unique name="unique1">
+                <xsd:selector xpath=".//mstns:Individual"/>
+                <xsd:field xpath="@IndividualID"/>
+              </xsd:unique>
+            </xsd:element>
+            <xsd:element name="LeadOpportunities"
+                         type="LeadOpportunitiesType" />
+            <xsd:element name="LeadContactDetails"
+                         type="LeadContactDetailsType" />
+            <xsd:element name="LeadVehicleLocations"
+                         type="LeadVehicleLocationsType"
+                         minOccurs="0" />
+            <xsd:element name="LeadVehicles"
+                         type="LeadVehiclesType"
+                         minOccurs="0" />
+            <xsd:element name="LeadBoats"
+                         type="LeadBoatsType"
+                         minOccurs="0" />
+            <xsd:element name="LeadHomes"
+                         type="LeadHomesType"
+                         minOccurs="0" />
+            <xsd:element name="LeadSubsidies"
+                         type="LeadSubsidiesType"
+                         minOccurs="0" />
+            <xsd:element name="LeadInsuranceClaims"
+                         type="LeadInsuranceClaimsType"
+                         minOccurs="0">
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+        <xsd:key name="key1">
+          <xsd:selector xpath=".//mstns:Individual" />
+          <xsd:field xpath="@IndividualID" />
+        </xsd:key>
+        <xsd:keyref name="keyref1"
+                    refer="key1">
+          <xsd:selector xpath=".//mstns:Driver" />
+          <xsd:field xpath="@IndividualIDRef" />
+        </xsd:keyref>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- LeadInformationType -->
+  <xsd:complexType name="LeadInformationType">
+    <xsd:all>
+      <xsd:element name="LeadGeneratedDateTime"
+                   type="xsd:dateTime">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The format for the field is yyyy-MM-ddTHH:mm:sszzz or yyyy-MM-ddTHH:mm:ss.
+            Example:2011-09-28T12:36:45.4775601-07:00
+            The LeadGeneratedDateTime date time should be translated to the Mountain Time zone; however AgentCubed can translate it for you if you let us know what time zone you will be posting it as.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ReferenceKey"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            This is the equivalent of the unique identifier on your end.  It gives the ability to track a lead to your system when needed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ReferenceKeyType"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            This is where you can send a short description of the type of lead (Exclusive, Non-Exclusive, Shared 1-3, Health, Life, etc ).
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Comments"
+                   type="xsd:string"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Put additional notes about the lead here.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="LeadOrigin"
+                   type="string250"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Pass the lead origination information here.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ReferralEmail"
+                   type="validationEmail"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Track the originating referral email address here.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TrackingKey01"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Pass additional information you would like AgentCubed to maintain with the current lead.  This is typically used to house unique identifiers from your system to AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TrackingKey02"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Pass additional information you would like AgentCubed to maintain with the current lead.  This is typically used to house unique identifiers from your system to AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TrackingKey03"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Pass additional information you would like AgentCubed to maintain with the current lead.  This is typically used to house unique identifiers from your system to AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TrackingKey04"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Pass additional information you would like AgentCubed to maintain with the current lead.  This is typically used to house unique identifiers from your system to AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TrackingKey05"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Pass additional information you would like AgentCubed to maintain with the current lead.  This is typically used to house unique identifiers from your system to AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TrackingKey06"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Pass additional information you would like AgentCubed to maintain with the current lead.  This is typically used to house unique identifiers from your system to AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TrackingKey07"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Pass additional information you would like AgentCubed to maintain with the current lead.  This is typically used to house unique identifiers from your system to AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TrackingKey08"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Pass additional information you would like AgentCubed to maintain with the current lead.  This is typically used to house unique identifiers from your system to AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TrackingKey09"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Pass additional information you would like AgentCubed to maintain with the current lead.  This is typically used to house unique identifiers from your system to AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="TrackingKey10"
+                   type="string50"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Pass additional information you would like AgentCubed to maintain with the current lead.  This is typically used to house unique identifiers from your system to AgentCubed.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="OriginalDNIS"
+                   type="string10"
+                   minOccurs="0" />
+
+
+      <xsd:element name="AdditionalContent01"
+                   type="string50"
+                   minOccurs="0" />
+      <xsd:element name="AdditionalContent02"
+                   type="string50"
+                   minOccurs="0" />
+      <xsd:element name="AdditionalContent03"
+                   type="string50"
+                   minOccurs="0" />
+      <xsd:element name="AdditionalContent04"
+                   type="string50"
+                   minOccurs="0" />
+      <xsd:element name="AdditionalContent05"
+                   type="string50"
+                   minOccurs="0" />
+
+    </xsd:all>
+  </xsd:complexType>
+
+  <!-- IndividualDetailsType -->
+  <xsd:complexType name="IndividualDetailsType">
+    <xsd:all>
+      <xsd:element name="RelationType">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Applicant" />
+            <xsd:enumeration value="Spouse" />
+            <xsd:enumeration value="Child" />
+            <xsd:enumeration value="Parent" />
+            <xsd:enumeration value="Grandchild" />
+            <xsd:enumeration value="Other" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="SSN"
+                   type="string50"
+                   minOccurs="0" />
+      <xsd:element name="Email"
+                   type="validationEmail"
+                   minOccurs="0" />
+      <xsd:element name="Prefix"
+                   type="string8"
+                   minOccurs="0" />
+      <xsd:element name="FirstName"
+                   type="string50"
+                   minOccurs="0" />
+      <xsd:element name="MiddleName"
+                   type="string20"
+                   minOccurs="0" />
+      <xsd:element name="LastName"
+                   type="string50"
+                   minOccurs="0" />
+      <xsd:element name="Suffix"
+                   type="string4"
+                   minOccurs="0" />
+      <xsd:element name="DOB"
+                   type="xsd:date"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The format for the field is yyyy-MM-dd.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="Gender"
+                   minOccurs="0">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Male" />
+            <xsd:enumeration value="M" />
+            <xsd:enumeration value="Female" />
+            <xsd:enumeration value="F" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="HeightFT"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            valid values are 0 through 9.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:enumeration value="0" />
+            <xsd:enumeration value="1" />
+            <xsd:enumeration value="2" />
+            <xsd:enumeration value="3" />
+            <xsd:enumeration value="4" />
+            <xsd:enumeration value="5" />
+            <xsd:enumeration value="6" />
+            <xsd:enumeration value="7" />
+            <xsd:enumeration value="8" />
+            <xsd:enumeration value="9" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="HeightIN"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            valid values are 0 through 11.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:enumeration value="0" />
+            <xsd:enumeration value="1" />
+            <xsd:enumeration value="2" />
+            <xsd:enumeration value="3" />
+            <xsd:enumeration value="4" />
+            <xsd:enumeration value="5" />
+            <xsd:enumeration value="6" />
+            <xsd:enumeration value="7" />
+            <xsd:enumeration value="8" />
+            <xsd:enumeration value="9" />
+            <xsd:enumeration value="10" />
+            <xsd:enumeration value="11" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="Weight"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            valid values are 0 through 9999.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="9999"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="Smoker"
+                   type="enumYesNos"
+                   minOccurs="0" />
+      <xsd:element name="MaritalStatus"
+                   minOccurs="0">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Single" />
+            <xsd:enumeration value="Married" />
+            <xsd:enumeration value="Divorced" />
+            <xsd:enumeration value="Separated" />
+            <xsd:enumeration value="Widowed" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="ExpectantParent"
+                   type="enumYesNos"
+                   minOccurs="0" />
+      <xsd:element name="CreditSelfRating"
+                   minOccurs="0">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Poor" />
+            <xsd:enumeration value="Average" />
+            <xsd:enumeration value="Good" />
+            <xsd:enumeration value="Excellent" />
+            <xsd:enumeration value="Unsure" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+
+      <xsd:element name="HazardousLifestyle"
+                   type="enumYesNos"
+                   minOccurs="0" />
+      <xsd:element name="FamilyHistoryCancer"
+                   type="enumYesNos"
+                   minOccurs="0" />
+      <xsd:element name="FamilyHistoryHeartDisease"
+                   type="enumYesNos"
+                   minOccurs="0" />
+
+      <xsd:element name="DriverIncidents"
+                   minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="Incident">
+              <xsd:complexType>
+                <xsd:all>
+                  <xsd:element name="IncidentType">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="Ticket" />
+                        <xsd:enumeration value="Accident" />
+                        <xsd:enumeration value="DUI" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:element>
+                  <xsd:element name="IncidentDate"
+                               type="xsd:date"
+                               minOccurs="0"/>
+                  <xsd:element name="TicketType"
+                               minOccurs="0">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="Careless Driving" />
+                        <xsd:enumeration value="Defective Equipment" />
+                        <xsd:enumeration value="Failure to Obey Signal" />
+                        <xsd:enumeration value="Speeding" />
+                        <xsd:enumeration value="Other" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:element>
+
+                  <xsd:element name="AccidentType"
+                               minOccurs="0">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="Vehicle Hit Other Vehicle" />
+                        <xsd:enumeration value="Vehicle Hit Pedestrian" />
+                        <xsd:enumeration value="Vehicle Hit Property" />
+                        <xsd:enumeration value="Vehicle Damaged Avoiding Accident" />
+                        <xsd:enumeration value="Other Vehicle Hit Driver Vehicle" />
+                        <xsd:enumeration value="Unlisted At Fault Accident" />
+                        <xsd:enumeration value="Unlisted Not At Fault Accident" />
+                        <xsd:enumeration value="Other" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:element>
+                  <xsd:element name="AccidentDamageType"
+                               type="enumDamageTypes"
+                               minOccurs="0" />
+                  <xsd:element name="AccidentDriverAtFault"
+                               type="enumYesNos"
+                               minOccurs="0" />
+                  <xsd:element name="AccidentClaimAmount"
+                               minOccurs="0">
+                    <xsd:annotation>
+                      <xsd:documentation xml:lang="en">
+                        valid values are 0 through 99999999.
+                      </xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:int">
+                        <xsd:minInclusive value="0"/>
+                        <xsd:maxInclusive value="99999999"/>
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:element>
+                  <xsd:element name="DUIState_Abbr"
+                               type="enumStates"
+                               minOccurs="0" />
+                  <xsd:element name="ShortDescription"
+                               type="string50"
+                               minOccurs="0" />
+                </xsd:all>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="DriversLicense"
+                   minOccurs="0">
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="State_Abbr"
+                         type="enumStates">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  The State abbreviation that the license was issued
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Number"
+                         type="string50"
+                         minOccurs="0"/>
+            <xsd:element name="IssuedDate"
+                         type="xsd:date"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  The format for the field is yyyy-MM-dd.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Status"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Valid License"/>
+                  <xsd:enumeration value="Suspended" />
+                  <xsd:enumeration value="Probation" />
+                  <xsd:enumeration value="Restricted" />
+                  <xsd:enumeration value="Learner Permit" />
+                  <xsd:enumeration value="Temporary" />
+                  <xsd:enumeration value="International" />
+                  <xsd:enumeration value="Expired" />
+                  <xsd:enumeration value="Not Licensed"/>
+                  <xsd:enumeration value="Other"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="EverSuspendedRevoked"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="SR22Required"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="DriverTraining"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="CurrentInsurances"
+                   minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="CurrentInsurance">
+              <xsd:complexType>
+                <xsd:all>
+                  <xsd:element name="InsuranceCompany"
+                               type="string250" />
+                  <xsd:element name="PolicyExpirationDate"
+                               type="xsd:date"
+                               minOccurs="0" />
+                  <xsd:element name="InsuranceCoveragePeriod"
+                               minOccurs="0">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="Less than 6 months" />
+                        <xsd:enumeration value="More than 6 months" />
+                        <xsd:enumeration value="More than 1 year" />
+                        <xsd:enumeration value="More than 18 months" />
+                        <xsd:enumeration value="More than 2 years" />
+                        <xsd:enumeration value="More than 3 years" />
+                        <xsd:enumeration value="More than 4 years" />
+                        <xsd:enumeration value="More than 5 years" />
+                        <xsd:enumeration value="More than 6 years" />
+                        <xsd:enumeration value="More than 7 years" />
+                        <xsd:enumeration value="More than 8 years" />
+                        <xsd:enumeration value="More than 9 years" />
+                        <xsd:enumeration value="More than 10 years" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:element>
+                </xsd:all>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="CurrentMedicalConditions"
+                   minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="CurrentMedicalCondition">
+              <xsd:complexType>
+                <xsd:all>
+                  <xsd:element name="MedicalCondition">
+                    <xsd:simpleType>
+                      <xsd:restriction base="xsd:string">
+                        <xsd:enumeration value="AIDS / HIV" />
+                        <xsd:enumeration value="Alcohol / Drug Abuse" />
+                        <xsd:enumeration value="Alzheimer's / Dementia" />
+                        <xsd:enumeration value="Asthma" />
+                        <xsd:enumeration value="Cancer" />
+                        <xsd:enumeration value="High Cholesterol" />
+                        <xsd:enumeration value="Clinical Depression" />
+                        <xsd:enumeration value="Diabetes" />
+                        <xsd:enumeration value="Heart Disease" />
+                        <xsd:enumeration value="High Blood Pressure" />
+                        <xsd:enumeration value="Hepatitis / Liver" />
+                        <xsd:enumeration value="Kidney Disease" />
+                        <xsd:enumeration value="Pulmonary Disease" />
+                        <xsd:enumeration value="Stroke" />
+                        <xsd:enumeration value="Ulcers" />
+                        <xsd:enumeration value="Vascular Disease" />
+                        <xsd:enumeration value="Other / Not Listed" />
+                        <xsd:enumeration value="Heart Attack" />
+                        <xsd:enumeration value="Emphysema" />
+                        <xsd:enumeration value="Epilepsy" />
+                        <xsd:enumeration value="Mental Illness" />
+                        <xsd:enumeration value="Multiple Sclerosis" />
+                      </xsd:restriction>
+                    </xsd:simpleType>
+                  </xsd:element>
+                  <xsd:element name="MedicalOther"
+                               type="string100"
+                               minOccurs="0" />
+                </xsd:all>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+    </xsd:all>
+    <xsd:attribute name="IndividualID"
+                   type="xsd:int"
+                   use="required" />
+  </xsd:complexType>
+
+  <!-- LeadOpportunitiesType -->
+  <xsd:complexType name="LeadOpportunitiesType">
+    <xsd:sequence maxOccurs="unbounded">
+      <xsd:element name="Opportunity">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            We are planning on expanding this section in the near future.  It will be limited to only one for now.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="InsuranceType"
+                         type="enumInsuranceTypes" />
+            <xsd:element name="RequestedEffectiveDate"
+                         type="xsd:date"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  The format for the field is yyyy-MM-dd.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="RequestedCoverages"
+                         minOccurs="0">
+              <xsd:complexType>
+                <xsd:sequence maxOccurs="unbounded">
+                  <xsd:element name="RequestedCoverage">
+                    <xsd:complexType>
+                      <xsd:all>
+                        <xsd:element name="CoverageType"
+                                     type="enumCoverages" />
+                        <xsd:element name="Qualifier"
+                                     type="enumQualifiers"
+                                     minOccurs="0" />
+                        <xsd:element name="Value"
+                                     type="string100"
+                                     minOccurs="0"/>
+                        <xsd:element name="Comment"
+                                     type="xsd:string"
+                                     minOccurs="0"/>
+                      </xsd:all>
+                    </xsd:complexType>
+                  </xsd:element>
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="RequestedAppointmentDT"
+                         type="xsd:dateTime"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  The format for the field is yyyy-MM-ddTHH:mm:ssZ or yyyy-MM-ddTHH:mm:sszzz.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="GroupCompany"
+                         minOccurs="0">
+              <xsd:complexType>
+                <xsd:all>
+                  <xsd:element name="Name"
+                               type="string75"/>
+                </xsd:all>
+              </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="OpportunityStatus"
+                         type="string50"
+                         minOccurs="0" />
+
+            <xsd:element name="LeadID"
+                         type="validationGuidString"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Identifier used by the LeadID lead assessment service to conduct risk assessment of leads.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- LeadContactDetailsType -->
+  <xsd:complexType name="LeadContactDetailsType">
+    <xsd:all>
+      <xsd:element name="Address"
+                   type="AddressType"
+                   minOccurs="0" />
+      <xsd:element name="MailingAddress"
+                   type="AddressType"
+                   minOccurs="0" />
+      <xsd:element name="PrimaryPhone"
+                   type="validationPhone">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The number being passed must be 10 digits in length that does not include the proceeding long distance code “1”.  Format: 9999999999
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="PrimaryPhoneExt"
+                   type="string50"
+                   minOccurs="0" />
+      <xsd:element name="SecondaryPhone"
+                   type="validationPhone"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The number being passed must be 10 digits in length that does not include the proceeding long distance code “1”.  Format: 9999999999
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="SecondaryPhoneExt"
+                   type="string50"
+                   minOccurs="0" />
+      <xsd:element name="FaxPhone"
+                   type="validationPhone"
+                   minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The number being passed must be 10 digits in length that does not include the proceeding long distance code “1”.  Format: 9999999999
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="BestTimeToContact"
+                   minOccurs="0">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Morning" />
+            <xsd:enumeration value="Afternoon" />
+            <xsd:enumeration value="Evening" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <!-- Commented out on 8 Jan 2014 by JPZ; not sure we need this after all, but holding for further review-->
+      <!--<xsd:element name="IsConsentToContact" type="enumYesNos" minOccurs="0">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                Determines whether lead has given Consent To Contact.
+                An update to the lead, if pre-existing, will only process if this flag is set to Yes; a No will be ignored by the system.
+            </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>-->
+    </xsd:all>
+  </xsd:complexType>
+
+  <!-- LeadVehiclesType -->
+  <xsd:complexType name="LeadVehiclesType">
+    <xsd:sequence maxOccurs="unbounded">
+      <xsd:element name="Vehicle">
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="Year"
+                         type="xsd:gYear"/>
+            <xsd:element name="Make"
+                         type="string100"/>
+            <xsd:element name="Model"
+                         type="string100"
+                         minOccurs="0"/>
+            <xsd:element name="Submodel"
+                         type="string100"
+                         minOccurs="0" />
+            <xsd:element name="VIN"
+                         type="string100"
+                         minOccurs="0"/>
+
+            <xsd:element name="VehicleUsage"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Commute" />
+                  <xsd:enumeration value="Business" />
+                  <xsd:enumeration value="Pleasure" />
+                  <xsd:enumeration value="Farm/Ranch Use" />
+                  <xsd:enumeration value="Government" />
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="AnnualMileage"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="0 - 5000" />
+                  <xsd:enumeration value="5001 - 7500" />
+                  <xsd:enumeration value="7501 - 10000" />
+                  <xsd:enumeration value="10001 - 12500" />
+                  <xsd:enumeration value="12501 - 15000" />
+                  <xsd:enumeration value="15001 - 20000" />
+                  <xsd:enumeration value="20001 - 25000" />
+                  <xsd:enumeration value="25001 - 30000" />
+                  <xsd:enumeration value="30001 - 40000" />
+                  <xsd:enumeration value="40001 - 50000" />
+                  <xsd:enumeration value="50001 and more" />
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="CollisionDeductible"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  No longer supported as of 20121116
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="No Coverage" />
+                  <xsd:enumeration value="No Deductible" />
+                  <xsd:enumeration value="50" />
+                  <xsd:enumeration value="100" />
+                  <xsd:enumeration value="150" />
+                  <xsd:enumeration value="200" />
+                  <xsd:enumeration value="250" />
+                  <xsd:enumeration value="500" />
+                  <xsd:enumeration value="750" />
+                  <xsd:enumeration value="1000" />
+                  <xsd:enumeration value="2500" />
+                  <xsd:enumeration value="5000" />
+                  <xsd:enumeration value="Other" />
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="ComprehensiveDeductible"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  No longer supported as of 20121116
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="No Coverage" />
+                  <xsd:enumeration value="No Deductible" />
+                  <xsd:enumeration value="50" />
+                  <xsd:enumeration value="100" />
+                  <xsd:enumeration value="150" />
+                  <xsd:enumeration value="200" />
+                  <xsd:enumeration value="250" />
+                  <xsd:enumeration value="500" />
+                  <xsd:enumeration value="750" />
+                  <xsd:enumeration value="1000" />
+                  <xsd:enumeration value="2500" />
+                  <xsd:enumeration value="5000" />
+                  <xsd:enumeration value="Other" />
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="Drivers"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  No longer supported as of 20121116
+                  1. Each driver is a reference to the IndividualID.
+                  2. The reference key can only be assigned once per vehicle.
+                  3. Each vehicle must have a primary driver.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:complexType>
+                <xsd:sequence maxOccurs="unbounded">
+                  <xsd:element name="Driver">
+                    <xsd:complexType>
+                      <xsd:sequence>
+                        <xsd:element name="PrimaryDriver"
+                                     type="enumYesNos" />
+                      </xsd:sequence>
+                      <xsd:attribute name="IndividualIDRef"
+                                     type="xsd:int"
+                                     use="required"/>
+                    </xsd:complexType>
+                  </xsd:element>
+                </xsd:sequence>
+              </xsd:complexType>
+              <xsd:unique name="unique2">
+                <xsd:selector xpath="mstns:Driver"/>
+                <xsd:field xpath="@IndividualIDRef"/>
+              </xsd:unique>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- LeadBoatsType -->
+  <xsd:complexType name="LeadBoatsType">
+    <xsd:sequence maxOccurs="unbounded">
+      <xsd:element name="Boat">
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="WaterUnitTypeCode"
+                         type="string1"
+                         minOccurs="0"/>
+            <xsd:element name="Year"
+                         type="xsd:gYear"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Model year of the boat
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="UnitDescription"
+                         type="string30"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Make and model information about the boat
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Horsepower"
+                         type="string3"
+                         minOccurs="0" />
+            <xsd:element name="Length"
+                         type="string3"
+                         minOccurs="0"/>
+            <xsd:element name="WatersNavigatedCode"
+                         type="string1"
+                         minOccurs="0"/>
+            <xsd:element name="OperatorsUnder21Years"
+                         type="string1"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Number of authorized drivers under 21 years of age
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="WaterSkiingIndicator"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="PropulsionTypeCode"
+                         type="string1"
+                         minOccurs="0"/>
+            <xsd:element name="CostNew"
+                         type="string8"
+                         minOccurs="0"/>
+            <xsd:element name="PresentValue"
+                         type="string8"
+                         minOccurs="0"/>
+            <xsd:element name="LayUpTypeCode"
+                         type="string1"
+                         minOccurs="0"/>
+            <xsd:element name="CommercialUseIndicator"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="RacingIndicator"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="DriverLicenseSuspendedRevokedIndicator"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="AnyLossesIndicator"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="Capacity"
+                         type="xsd:int"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Weight capacity of the boat
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="HullMaterialTypeCode"
+                         type="string1"
+                         minOccurs="0"/>
+            <xsd:element name="FuelTankCode"
+                         type="string1"
+                         minOccurs="0"/>
+            <xsd:element name="FuelTypeCode"
+                         type="string1"
+                         minOccurs="0"/>
+            <xsd:element name="HullDesignTypeCode"
+                         type="string1"
+                         minOccurs="0"/>
+            <xsd:element name="MotorYear1"
+                         type="xsd:gYear"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Model year of the first motor
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="MotorDescription1"
+                         type="string30"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Make and model information about the first motor
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="MotorHorsepower1"
+                         type="string3"
+                         minOccurs="0" />
+            <xsd:element name="MotorYear2"
+                         type="xsd:gYear"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Model year of the second motor
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="MotorDescription2"
+                         type="string30"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Make and model information about the second motor
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="MotorHorsepower2"
+                         type="string3"
+                         minOccurs="0" />
+            <xsd:element name="MotorYear3"
+                         type="xsd:gYear"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Model year of the third motor
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="MotorDescription3"
+                         type="string30"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Make and model information about the third motor
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="MotorHorsepower3"
+                         type="string3"
+                         minOccurs="0" />
+            <xsd:element name="MotorYear4"
+                         type="xsd:gYear"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Model year of the fourth motor
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="MotorDescription4"
+                         type="string30"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Make and model information about the fourth motor
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="MotorHorsepower4"
+                         type="string3"
+                         minOccurs="0" />
+            <xsd:element name="TrailerYear"
+                         type="xsd:gYear"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Model year of the trailer
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="TrailerDescription"
+                         type="string30"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Make and model information about the trailer
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="TrailerCostNew"
+                         type="string8"
+                         minOccurs="0"/>
+            <xsd:element name="TrailerPresentValue"
+                         type="string8"
+                         minOccurs="0"/>
+            <xsd:element name="TrailerNumberOfAxles"
+                         type="xsd:int"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Number of axles on the tow trailer (if equipped)
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="DatePurchased"
+                         type="string8"
+                         minOccurs="0"/>
+            <xsd:element name="SerialNumber"
+                         type="string25"
+                         minOccurs="0"/>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- LeadHomesType -->
+  <xsd:complexType name="LeadHomesType">
+    <xsd:sequence maxOccurs="unbounded">
+      <xsd:element name="Home">
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="Address"
+                         type="AddressType"
+                         minOccurs="0" />
+            <xsd:element name="OccupiedByApplicant"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="Bedrooms"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 9999.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="0"/>
+                  <xsd:maxInclusive value="9999"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="Bathrooms"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 9999.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="0"/>
+                  <xsd:maxInclusive value="9999"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="FireplacesOrWoodstoves"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 9999.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="0"/>
+                  <xsd:maxInclusive value="9999"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="YearBuilt"
+                         type="xsd:gYear"
+                         minOccurs="0" />
+            <xsd:element name="DwellingType"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Single Family Home"/>
+                  <xsd:enumeration value="Multi Family Home"/>
+                  <xsd:enumeration value="Apartment"/>
+                  <xsd:enumeration value="Duplex"/>
+                  <xsd:enumeration value="Condominium"/>
+                  <xsd:enumeration value="Townhome"/>
+                  <xsd:enumeration value="Mobile Home"/>
+                  <xsd:enumeration value="Other"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="FoundationType"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Basement 1/1 Finished"/>
+                  <xsd:enumeration value="Basement 3/4 Finished"/>
+                  <xsd:enumeration value="Basement 1/2 Finished"/>
+                  <xsd:enumeration value="Basement 1/4 Finished"/>
+                  <xsd:enumeration value="Basement Unfinished"/>
+                  <xsd:enumeration value="Crawl Space"/>
+                  <xsd:enumeration value="Piers Pilings Stilts"/>
+                  <xsd:enumeration value="Slab"/>
+                  <xsd:enumeration value="Other"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="FireExtinguisher"
+                         type="enumYesNos"
+                         minOccurs="0" />
+            <xsd:element name="FireHydrantProximity"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Within 1000 Feet"/>
+                  <xsd:enumeration value="Over 1000 Feet"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="FireStationProximity"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Within 5 Miles"/>
+                  <xsd:enumeration value="Within 10 Miles"/>
+                  <xsd:enumeration value="Over 10 Miles"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="FireAlarm"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="SmokeDetector"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="BurglarAlarm"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="DesignType"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="One Story"/>
+                  <xsd:enumeration value="Bi-Level"/>
+                  <xsd:enumeration value="Two Story"/>
+                  <xsd:enumeration value="Tri-Level"/>
+                  <xsd:enumeration value="Other"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="ExteriorWallType"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Mostly Brick"/>
+                  <xsd:enumeration value="Mostly Wood Frame"/>
+                  <xsd:enumeration value="Mostly Stone"/>
+                  <xsd:enumeration value="Aluminum Or Vinyl Siding"/>
+                  <xsd:enumeration value="Veneer"/>
+                  <xsd:enumeration value="Cinder Block"/>
+                  <xsd:enumeration value="Stucco"/>
+                  <xsd:enumeration value="Log"/>
+                  <xsd:enumeration value="Other"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="ServicePanelType"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Circuit Breaker"/>
+                  <xsd:enumeration value="FuseBox"/>
+                  <xsd:enumeration value="Other"/>
+                  <xsd:enumeration value="Unknown"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="ConstructionType"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Frame"/>
+                  <xsd:enumeration value="Joisted Masonry"/>
+                  <xsd:enumeration value="Masonry Non-combustible"/>
+                  <xsd:enumeration value="Modified Resistive"/>
+                  <xsd:enumeration value="Fire Resistive/Superior"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="GarageType"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="One Car Attached"/>
+                  <xsd:enumeration value="Two Car Attached"/>
+                  <xsd:enumeration value="Three Car Attached"/>
+                  <xsd:enumeration value="Carport Attached"/>
+                  <xsd:enumeration value="One Car Detached"/>
+                  <xsd:enumeration value="Two Car Detached"/>
+                  <xsd:enumeration value="Three Car Detached"/>
+                  <xsd:enumeration value="Carport Detached"/>
+                  <xsd:enumeration value="Other"/>
+                  <xsd:enumeration value="No Garage"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="AttackDog"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="ResidenceType"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Primary"/>
+                  <xsd:enumeration value="Secondary"/>
+                  <xsd:enumeration value="Prior"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="DeadBolt"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="SquareFootage"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 999999.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="0"/>
+                  <xsd:maxInclusive value="999999"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="NumberStories"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="1-2"/>
+                  <xsd:enumeration value="3-5"/>
+                  <xsd:enumeration value="6-10"/>
+                  <xsd:enumeration value="Over 10"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="UsedForBusinessOrFarming"
+                         type="enumYesNos"
+                         minOccurs="0"/>
+            <xsd:element name="PropertyStatusType"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Own"/>
+                  <xsd:enumeration value="Rent"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="HeatingType"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Gas Forced Air"/>
+                  <xsd:enumeration value="Boiler"/>
+                  <xsd:enumeration value="Oil Coal Kerosene"/>
+                  <xsd:enumeration value="Propane"/>
+                  <xsd:enumeration value="Electric"/>
+                  <xsd:enumeration value="Stove"/>
+                  <xsd:enumeration value="Other"/>
+                  <xsd:enumeration value="Unknown"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="HeatingAge"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 999.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="0"/>
+                  <xsd:maxInclusive value="999"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="RoofType"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="Composition Shingle"/>
+                  <xsd:enumeration value="Wood Shingle"/>
+                  <xsd:enumeration value="Tile"/>
+                  <xsd:enumeration value="Concrete"/>
+                  <xsd:enumeration value="Other"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="RoofAge"
+                         minOccurs="0">
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                  <xsd:enumeration value="1 To 5 Years"/>
+                  <xsd:enumeration value="6 To 10 Years"/>
+                  <xsd:enumeration value="11 Or More Years"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="PlumbingAge"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 999.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="0"/>
+                  <xsd:maxInclusive value="999"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="ElectricAge"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 999.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="0"/>
+                  <xsd:maxInclusive value="999"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="PropertyType"
+                         type="enumPropertyTypes"
+                         minOccurs="0"/>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- LeadSubsidiesType -->
+  <xsd:complexType name="LeadSubsidiesType">
+    <xsd:sequence maxOccurs="unbounded">
+      <xsd:element name="Subsidy">
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="HouseholdIncome"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 9999999.99.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:minInclusive value="0.00"/>
+                  <xsd:maxInclusive value="9999999.99"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="NumberOfAdults"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 99.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="0"/>
+                  <xsd:maxInclusive value="99"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="NumberOfChildren"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 99.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="0"/>
+                  <xsd:maxInclusive value="99"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="EstimatedMonthlyPremium"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 9999999.99.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:minInclusive value="0.00"/>
+                  <xsd:maxInclusive value="9999999.99"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="EstimatedAnnualPremium"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 9999999.99.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:minInclusive value="0.00"/>
+                  <xsd:maxInclusive value="9999999.99"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="MaximumPercentOfIncome"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 100.00.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:minInclusive value="0.00"/>
+                  <xsd:maxInclusive value="100.00"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="CostShareReduction"
+                         minOccurs="0">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 9999999.99.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:decimal">
+                  <xsd:minInclusive value="0.00"/>
+                  <xsd:maxInclusive value="9999999.99"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- LeadVehicleLocationsType -->
+  <xsd:complexType name="LeadVehicleLocationsType">
+    <xsd:sequence maxOccurs="unbounded">
+      <xsd:element name="VehicleLocation">
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="Address"
+                         type="AddressType"
+                         minOccurs="0" />
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- LeadInsuranceClaimsType -->
+  <xsd:complexType name="LeadInsuranceClaimsType">
+    <xsd:sequence maxOccurs="unbounded">
+      <xsd:element name="InsuranceClaim">
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="InsuranceType"
+                         type="enumInsuranceTypes" />
+            <xsd:element name="Date"
+                         type="xsd:date"
+                         minOccurs="0"/>
+            <xsd:element name="DamageType"
+                         type="enumDamageTypes"
+                         minOccurs="0" />
+            <xsd:element name="Amount"
+                         minOccurs="0" >
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  valid values are 0 through 99999999.
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:simpleType>
+                <xsd:restriction base="xsd:int">
+                  <xsd:minInclusive value="0"/>
+                  <xsd:maxInclusive value="99999999"/>
+                </xsd:restriction>
+              </xsd:simpleType>
+            </xsd:element>
+            <xsd:element name="Comment"
+                         type="xsd:string"
+                         minOccurs="0"/>
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- AddressType -->
+  <xsd:complexType name="AddressType">
+    <xsd:all>
+      <xsd:element name="Address1"
+                   type="string250"
+                   minOccurs="0" />
+      <xsd:element name="Address2"
+                   type="string250"
+                   minOccurs="0" />
+      <xsd:element name="ZipCode"
+                   type="validationZip"
+                   minOccurs="0" />
+      <xsd:element name="County"
+                   type="string50"
+                   minOccurs="0" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <!-- Strings -->
+  <xsd:simpleType name="string1">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="1" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string3">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="3" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string4">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="4" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string8">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="8" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string10">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="10" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string20">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="20" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string25">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="25" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="string30">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="30" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="string40">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="40" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="string50">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="50" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="string75">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="75" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="string100">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="100" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string250">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="250" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="string255">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="255" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Validation -->
+  <xsd:simpleType name="validationGuidString">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})|(\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\})"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="validationZip">
+    <xsd:restriction base="xsd:string">
+      <xsd:length value="5" />
+      <xsd:pattern value="(\d{5})" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="validationEmail">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="100" />
+      <xsd:pattern value="^$|[a-zA-Z_0-9\.\-]+@([a-zA-Z_0-9\-]+\.)+[a-zA-Z]{2,4}" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="validationPhone">
+    <xsd:restriction base="xsd:string">
+      <xsd:length value="10" />
+      <xsd:pattern value="(\d{10})" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Enumerations -->
+  <xsd:simpleType name="enumYesNos">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Yes" />
+      <xsd:enumeration value="No" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="enumYesNoUnknowns">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Yes" />
+      <xsd:enumeration value="No" />
+      <xsd:enumeration value="Unknown" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="enumStates">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="AK" />
+      <xsd:enumeration value="AL" />
+      <xsd:enumeration value="AR" />
+      <xsd:enumeration value="AZ" />
+      <xsd:enumeration value="CA" />
+      <xsd:enumeration value="CO" />
+      <xsd:enumeration value="CT" />
+      <xsd:enumeration value="DC" />
+      <xsd:enumeration value="DE" />
+      <xsd:enumeration value="FL" />
+      <xsd:enumeration value="GA" />
+      <xsd:enumeration value="HI" />
+      <xsd:enumeration value="IA" />
+      <xsd:enumeration value="ID" />
+      <xsd:enumeration value="IL" />
+      <xsd:enumeration value="IN" />
+      <xsd:enumeration value="KS" />
+      <xsd:enumeration value="KY" />
+      <xsd:enumeration value="LA" />
+      <xsd:enumeration value="MA" />
+      <xsd:enumeration value="MD" />
+      <xsd:enumeration value="ME" />
+      <xsd:enumeration value="MI" />
+      <xsd:enumeration value="MN" />
+      <xsd:enumeration value="MO" />
+      <xsd:enumeration value="MS" />
+      <xsd:enumeration value="MT" />
+      <xsd:enumeration value="NC" />
+      <xsd:enumeration value="ND" />
+      <xsd:enumeration value="NE" />
+      <xsd:enumeration value="NH" />
+      <xsd:enumeration value="NJ" />
+      <xsd:enumeration value="NM" />
+      <xsd:enumeration value="NV" />
+      <xsd:enumeration value="NY" />
+      <xsd:enumeration value="OH" />
+      <xsd:enumeration value="OK" />
+      <xsd:enumeration value="OR" />
+      <xsd:enumeration value="PA" />
+      <xsd:enumeration value="RI" />
+      <xsd:enumeration value="SC" />
+      <xsd:enumeration value="SD" />
+      <xsd:enumeration value="TN" />
+      <xsd:enumeration value="TX" />
+      <xsd:enumeration value="UT" />
+      <xsd:enumeration value="VA" />
+      <xsd:enumeration value="VT" />
+      <xsd:enumeration value="WA" />
+      <xsd:enumeration value="WI" />
+      <xsd:enumeration value="WV" />
+      <xsd:enumeration value="WY" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="enumDamageTypes">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="People" />
+      <xsd:enumeration value="Property" />
+      <xsd:enumeration value="Both" />
+      <xsd:enumeration value="Not Applicable" />
+      <xsd:enumeration value="Other" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="enumQualifiers">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Per Person"/>
+      <xsd:enumeration value="Per Incident"/>
+      <xsd:enumeration value="Per Day"/>
+      <xsd:enumeration value="Per Policy"/>
+      <xsd:enumeration value="Maximum"/>
+      <xsd:enumeration value="Deductible"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="enumCoverages">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Bodily Injury"/>
+      <xsd:enumeration value="Bonds"/>
+      <xsd:enumeration value="Business Interruption"/>
+      <xsd:enumeration value="Business Owners Policy"/>
+      <xsd:enumeration value="Collision"/>
+      <xsd:enumeration value="Commercial Auto"/>
+      <xsd:enumeration value="Commercial Crime"/>
+      <xsd:enumeration value="Commercial General Liability"/>
+      <xsd:enumeration value="Commercial Package Policy"/>
+      <xsd:enumeration value="Comprehensive"/>
+      <xsd:enumeration value="Dental"/>
+      <xsd:enumeration value="Directors Officers"/>
+      <xsd:enumeration value="Employment Practices"/>
+      <xsd:enumeration value="Errors And Omissions"/>
+      <xsd:enumeration value="Glass"/>
+      <xsd:enumeration value="Major Medical"/>
+      <xsd:enumeration value="Maternity"/>
+      <xsd:enumeration value="Medical"/>
+      <xsd:enumeration value="Medicare"/>
+      <xsd:enumeration value="Medicare Advantage"/>
+      <xsd:enumeration value="Medigap"/>
+      <xsd:enumeration value="Mortgage"/>
+      <xsd:enumeration value="Non Owned Auto"/>
+      <xsd:enumeration value="Personal Liability"/>
+      <xsd:enumeration value="Personal Property"/>
+      <xsd:enumeration value="Physical Building"/>
+      <xsd:enumeration value="Point Of Service Medical"/>
+      <xsd:enumeration value="Preferred Provider Organization Medical"/>
+      <xsd:enumeration value="Permanent Whole"/>
+      <xsd:enumeration value="Permanent Universal"/>
+      <xsd:enumeration value="Permanent Variable"/>
+      <xsd:enumeration value="Prescription"/>
+      <xsd:enumeration value="Prescription Drug Plan"/>
+      <xsd:enumeration value="Property Damage"/>
+      <xsd:enumeration value="Rental Car"/>
+      <xsd:enumeration value="Residence"/>
+      <xsd:enumeration value="Technology Business Package"/>
+      <xsd:enumeration value="Term 1 Year Annually Renewable"/>
+      <xsd:enumeration value="Term 5 Year Guaranteed Level Premium"/>
+      <xsd:enumeration value="Term 10 Year Guaranteed Level Premium"/>
+      <xsd:enumeration value="Term 15 Year Guaranteed Level Premium"/>
+      <xsd:enumeration value="Term 20 Year Guaranteed Level Premium"/>
+      <xsd:enumeration value="Term 25 Year Guaranteed Level Premium"/>
+      <xsd:enumeration value="Term 30 Year Guaranteed Level Premium"/>
+      <xsd:enumeration value="Towing"/>
+      <xsd:enumeration value="Umbrella Policy"/>
+      <xsd:enumeration value="Uninsured Motorist"/>
+      <xsd:enumeration value="Underinsured Motorist"/>
+      <xsd:enumeration value="Workers Comp"/>
+      <xsd:enumeration value="Vision Care"/>
+      <xsd:enumeration value="Other"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="enumInsuranceTypes">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Accident" />
+      <xsd:enumeration value="Annuity" />
+      <xsd:enumeration value="Auto" />
+      <xsd:enumeration value="Boat" />
+      <xsd:enumeration value="Umbrella" />
+      <xsd:enumeration value="Cancer Care" />
+      <xsd:enumeration value="Critical Illness" />
+      <xsd:enumeration value="Commercial Vehicle" />
+      <xsd:enumeration value="Dental" />
+      <xsd:enumeration value="Disability" />
+      <xsd:enumeration value="Discount" />
+      <xsd:enumeration value="Health" />
+      <xsd:enumeration value="Health Group" />
+      <xsd:enumeration value="Home" />
+      <xsd:enumeration value="Property" />
+      <xsd:enumeration value="Indemnity Plan" />
+      <xsd:enumeration value="International" />
+      <xsd:enumeration value="Life" />
+      <xsd:enumeration value="Limited Medical" />
+      <xsd:enumeration value="Long Term Care" />
+      <xsd:enumeration value="Medicare" />
+      <xsd:enumeration value="Renters" />
+      <xsd:enumeration value="Recreation Vehicle" />
+      <xsd:enumeration value="RxPlans" />
+      <xsd:enumeration value="Short Term Health" />
+      <xsd:enumeration value="Vision" />
+      <xsd:enumeration value="Agent Or Broker" />
+      <xsd:enumeration value="Employer" />
+      <xsd:enumeration value="Device Protection" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="enumPropertyTypes">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="1|Home">
+        <xsd:annotation>
+          <xsd:appinfo>Home</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="2|Property">
+        <xsd:annotation>
+          <xsd:appinfo>Property</xsd:appinfo>
+        </xsd:annotation>
+      </xsd:enumeration>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+
+  <xsd:simpleType name="enumAgentIDTypes">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Exclusive" />
+      <xsd:enumeration value="AssignedTo" />
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>
